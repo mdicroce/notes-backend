@@ -1,55 +1,56 @@
 /* const { response } = require('express') */
-let morgan = require('morgan');
-const express = require('express');
-const cors = require('cors');
+let morgan = require("morgan");
+const express = require("express");
+const cors = require("cors");
 
 const app = express();
 app.use(express.json());
 app.use(cors());
-
-morgan.token('post', (res,req) => {
-  if(res.method === "POST")
-  {
-    return JSON.stringify(res.body)
+app.use(express.static("build"));
+morgan.token("post", (res, req) => {
+  if (res.method === "POST") {
+    return JSON.stringify(res.body);
   }
   return "";
-})
-app.use(morgan(':method :url :status :res[content-length] - :response-time ms :post'));
+});
+app.use(
+  morgan(":method :url :status :res[content-length] - :response-time ms :post")
+);
 let persons = [
   {
     id: 1,
-    name: 'Arto Hellas',
-    number: '040-123456',
+    name: "Arto Hellas",
+    number: "040-123456",
   },
   {
     id: 2,
-    name: 'Ada Lovelace',
-    number: '39-44-5323523',
+    name: "Ada Lovelace",
+    number: "39-44-5323523",
   },
   {
     id: 3,
-    name: 'Dan Abramov',
-    number: '12-43-234353',
+    name: "Dan Abramov",
+    number: "12-43-234353",
   },
   {
     id: 4,
-    name: 'Mary Poppendick',
-    number: '39-23-614124',
+    name: "Mary Poppendick",
+    number: "39-23-614124",
   },
 ];
-app.get('/api/persons/:id', (request, response) => {
+app.get("/api/persons/:id", (request, response) => {
   const id = Number(request.params.id);
   const person = persons.find((actual) => actual.id === id);
   if (person) {
     response.json(person);
   } else {
-    response.status(404).end('vamos menem');
+    response.status(404).end("vamos menem");
   }
 });
-app.get('/api/persons', (request, response) => {
+app.get("/api/persons", (request, response) => {
   response.json(persons);
 });
-app.get('/info', (request, response) => {
+app.get("/info", (request, response) => {
   const size = persons.length;
   const time = new Date();
   const text = `<p>Phonebook has info for ${size} people </p>
@@ -61,7 +62,11 @@ const idFunction = () => {
   let number = 0;
   do {
     number = Math.floor(Math.random() * 100000);
-  } while (ids.some((actual) => {return actual === number}));
+  } while (
+    ids.some((actual) => {
+      return actual === number;
+    })
+  );
   return number;
 };
 
@@ -73,11 +78,11 @@ const errorPost = (body) => {
     return "Request doesen't have a number";
   }
   if (persons.find((actual) => actual.name === body.name)) {
-    return 'Name is already taken';
+    return "Name is already taken";
   }
-  return '';
+  return "";
 };
-app.post('/api/persons', (request, response) => {
+app.post("/api/persons", (request, response) => {
   const { body } = request;
   const text = errorPost(body);
   if (text) {
@@ -93,7 +98,7 @@ app.post('/api/persons', (request, response) => {
   persons = [...persons, newPerson];
   response.json(newPerson);
 });
-app.delete('/api/persons/:id', (request, response) => {
+app.delete("/api/persons/:id", (request, response) => {
   const id = Number(request.params.id);
   persons = persons.filter((actual) => actual.id !== id);
   response.status(204).end();
